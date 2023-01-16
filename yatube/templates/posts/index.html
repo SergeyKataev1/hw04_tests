@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<title>{% block title %}Yatube{% endblock %}</title>
+  <h1>Последние обновления на сайте</h1>
+      {% for post in page_obj %}
+      <article>
+        <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li>
+            Группа: {{ post.group }}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"D E Y" }}
+          </li>
+        </ul>
+      <p>{{ post.text|linebreaksbr }}</p>
+      {% if post.group %}
+      <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы {{ post.group.title }}</a>
+      {% endif %}
+      </article>
+      {% if not forloop.last %}<hr>{% endif %}
+      {% endfor %}
+    {% include 'posts/includes/paginator.html' %}
+{% endblock %}
