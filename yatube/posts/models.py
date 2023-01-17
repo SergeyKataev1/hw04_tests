@@ -5,8 +5,6 @@ User = get_user_model()
 
 
 class Group(models.Model):
-    class Meta:
-        verbose_name_plural = 'Группы'
 
     title = models.CharField(
         max_length=200,
@@ -18,14 +16,14 @@ class Group(models.Model):
     )
     description = models.TextField(verbose_name='Описание')
 
+    class Meta:
+        verbose_name_plural = 'Группы'
+
     def __str__(self) -> str:
         return self.title
 
 
 class Post(models.Model):
-    class Meta:
-        ordering = ('-pub_date', )
-        verbose_name_plural = 'Посты'
 
     text = models.TextField(verbose_name='Текст поста')
     pub_date = models.DateTimeField(
@@ -47,5 +45,9 @@ class Post(models.Model):
         verbose_name='Группа'
     )
 
+    class Meta:
+        ordering = ('-pub_date', )
+        verbose_name_plural = 'Посты'
+
     def __str__(self) -> str:
-        return self.text
+        return self.text[:15]

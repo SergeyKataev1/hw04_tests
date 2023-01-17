@@ -1,18 +1,15 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from posts.forms import PostForm
+from posts.models import Group, Post, User
 
-from .models import Group, Post
-
-User = get_user_model()
-Posts_on_page = 10
+POSTS_ON_PAGE = 10
 
 
 def get_page_context(request, queryset):
-    paginator = Paginator(queryset, Posts_on_page)
+    paginator = Paginator(queryset, POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return {
@@ -58,10 +55,7 @@ def post_detail(request, post_id):
 def post_create(request):
     form = PostForm(data=request.POST or None)
 
-    if request.method != 'POST':
-        return render(request, 'posts/post_create.html', {'form': form})
-
-    if not form.is_valid():
+    if request.method != 'POST' or not form.is_valid():
         return render(request, 'posts/post_create.html', {'form': form})
 
     post = form.save(commit=False)

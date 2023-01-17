@@ -14,8 +14,10 @@
     <title>{% block title %}Блок заголовка не загрузился{% endblock %}</title>
   </head>
   {% include 'includes/header.html' %}
+  <div class="container py-5">
   {% block content %}
   Блок контента не загрузился
   {% endblock %}
+  </div>
   {% include 'includes/footer.html' %}
 </html>

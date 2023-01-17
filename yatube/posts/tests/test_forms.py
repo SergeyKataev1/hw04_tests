@@ -1,10 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from posts.forms import PostForm
-from posts.models import Group, Post
-
-User = get_user_model()
+from posts.models import Group, Post, User
 
 
 class PostCreateFormTests(TestCase):
@@ -39,6 +36,7 @@ class PostCreateFormTests(TestCase):
         form_data = {
             'text': 'Тестовый текст',
             'group': self.group.pk,
+            'author': self.user
         }
         response = self.authorized_client.post(
             reverse('posts:post_create'),
@@ -52,32 +50,10 @@ class PostCreateFormTests(TestCase):
         # Проверяем, увеличилось ли число постов
         self.assertEqual(Post.objects.count(), posts_count + 1)
         # Проверяем, что создалась запись с нашим слагом
-        self.assertTrue(
-            Post.objects.filter(
-                group=PostCreateFormTests.group,
-                author=PostCreateFormTests.user,
-                text='Тестовый текст'
-            ).exists()
-        )
-
-    def test_guest_create_post(self):
-        """Создание записи только после авторизации"""
-        # Проверяем, что неавторизованный пользователь
-        # не может создать пост
-        form_data = {
-            'text': 'Тестовый пост от неавторизованного пользователя',
-            'group': self.group.pk,
-        }
-        self.guest_client.post(
-            reverse('posts:post_create'),
-            data=form_data,
-            follow=True,
-        )
-        self.assertFalse(
-            Post.objects.filter(
-                text='Тестовый пост от неавторизованного пользователя'
-            ).exists()
-        )
+        last_obj = Post.objects.all().latest('pk')
+        self.assertEqual(last_obj.author, form_data['author'])
+        self.assertEqual(last_obj.text, form_data['text'])
+        self.assertEqual(last_obj.group.pk, form_data['group'])
 
     def test_authorized_edit_post(self):
         """Редактирование записи создателем поста"""
@@ -109,3 +85,6 @@ class PostCreateFormTests(TestCase):
         post_edit = Post.objects.get(pk=self.group.pk)
         self.assertEqual(response_edit.status_code, 200)
         self.assertEqual(post_edit.text, 'Измененный текст поста')
+        # Проверка редиректа на страницу поста
+        self.assertRedirects(response_edit, reverse(
+            'posts:post_detail', kwargs={'post_id': self.post.pk}))
