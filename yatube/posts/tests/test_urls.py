@@ -1,4 +1,6 @@
 from django.test import Client, TestCase
+from django.urls import reverse
+
 from posts.models import Group, Post, User
 
 
@@ -26,12 +28,20 @@ class PostURLTests(TestCase):
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_url_names = {
-            '/': 'posts/index.html',
-            f'/group/{self.group.slug}/': 'posts/group_list.html',
-            f'/profile/{self.user.username}/': 'posts/profile.html',
-            f'/posts/{self.post.pk}/': 'posts/post_detail.html',
-            '/create/': 'posts/post_create.html',
-            f'/posts/{self.post.pk}/edit/': 'posts/post_create.html',
+            reverse('posts:index'): 'posts/index.html',
+            reverse(
+                'posts:group_list', kwargs={'slug': self.group.slug}
+            ): 'posts/group_list.html',
+            reverse(
+                'posts:profile', kwargs={'username': self.user.username}
+            ): 'posts/profile.html',
+            reverse(
+                'posts:post_detail', kwargs={'post_id': self.post.pk}
+            ): 'posts/post_detail.html',
+            reverse('posts:post_create'): 'posts/post_create.html',
+            reverse(
+                'posts:post_edit', kwargs={'post_id': self.post.pk}
+            ): 'posts/post_create.html',
         }
         for url, template, in templates_url_names.items():
             with self.subTest(url=url):
@@ -67,13 +77,15 @@ class PostURLTests(TestCase):
     def test_create_url_redirect_guest(self):
         """Страница /create/ перенаправляет неавторизованного клиента
         на страницу авторизации."""
-        response = self.guest_client.get('/create/')
-        self.assertRedirects(response, '/auth/login/?next=/create/')
+        response = self.guest_client.get(reverse('posts:post_create'))
+        self.assertRedirects(response, ('/auth/login/?next=/create/'))
 
     def test_post_edit_url_redirect_guest(self):
         """Страница posts/post_id/edit/ перенаправляет
          неавторизованного клиента на страницу авторизации."""
-        response = self.guest_client.get(f'/posts/{self.post.pk}/edit/')
+        response = self.guest_client.get(reverse(
+            'posts:post_edit', kwargs={'post_id': self.post.pk}
+        ))
         self.assertRedirects(
             response, f'/auth/login/?next=/posts/{self.post.pk}/edit/')
 

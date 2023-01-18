@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
+{% block title %}{{ group.title }}{% endblock %}
 {% block content %}
-<title>{% block title %}{{ group.title }}{% endblock %}</title>
   <h1>{{ group.title}}</h1>
     <p>{{ group.description }}</p>
     {% for post in page_obj %}
@@ -15,7 +15,6 @@
         </ul>
         <p>{{ post.text|linebreaksbr }}</p>
         <p><a href="{% url 'posts:post_detail' post.pk %}">Подробная информация</a></p>
-        <a href="{% url 'posts:index' %}">Вернуться на главную страницу</a>
       </article>
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
