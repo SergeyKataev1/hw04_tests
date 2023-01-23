@@ -26,8 +26,8 @@ class PostURLTests(TestCase):
         # Создадим вторую группу в БД
         cls.second_group = Group.objects.create(
             title='Вторая группа',
-            slug='test-slug-new',
-            description='Отличная группа от тестовой'
+            slug='test-slug-second',
+            description='Описание группы два'
         )
         # Создадим 13 постов в первой группе БД
         for post in range(13):
@@ -139,7 +139,7 @@ class PostURLTests(TestCase):
     def test_paginator_group_list_contains_two_records(self):
         # Проверка: посты второй группы созданы в количестве двух штук.
         response = self.guest_client.get(
-            reverse('posts:group_list', kwargs={'slug': 'test-slug-new'})
+            reverse('posts:group_list', kwargs={'slug': 'test-slug-second'})
         )
         self.assertEqual(len(response.context['page_obj']), 2)
 

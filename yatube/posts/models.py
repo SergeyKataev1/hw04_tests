@@ -14,7 +14,9 @@ class Group(models.Model):
         unique=True,
         verbose_name='Уникальная страница группы'
     )
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(
+        verbose_name='Описание'
+    )
 
     class Meta:
         verbose_name_plural = 'Группы'
@@ -26,7 +28,9 @@ class Group(models.Model):
 
 class Post(models.Model):
 
-    text = models.TextField(verbose_name='Текст поста')
+    text = models.TextField(
+        verbose_name='Текст поста'
+    )
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации'
@@ -44,6 +48,12 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         related_name='posts',
         verbose_name='Группа'
+    )
+
+    image = models.ImageField(
+        'Картинка',
+        upload_to='posts/',
+        blank=True
     )
 
     class Meta:

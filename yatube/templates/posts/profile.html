@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Профайл пользователя {{  author  }}{% endblock title %}
+{% load thumbnail %}
 {% block content %}
     <h1>Все посты пользователя: {{  author  }}</h1>
     <h3>Всего постов: {{  author.posts.all.count  }}</h3>
@@ -13,6 +14,9 @@
             Дата публикации: {{ post.pub_date|date:"D E Y" }}
           </li>
         </ul>
+        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+          <img class="card-img my-2" src="{{ im.url }}">
+        {% endthumbnail %}
         <p>{{ post.text|linebreaksbr }}</p>
         </article>
     {% if not forloop.last %}<hr>{% endif %}
