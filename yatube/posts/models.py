@@ -33,6 +33,7 @@ class Post(models.Model):
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
+        db_index=True,
         verbose_name='Дата публикации'
     )
     author = models.ForeignKey(
@@ -93,3 +94,23 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return self.text[:15]
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="follower"
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="following"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'user'], name='unique_following'
+            )
+        ]
